@@ -23,7 +23,7 @@ the ``DAG`` variant is used, and the results are output to output/test_run.dat.
 For any support questions email brianwgoldman@acm.org.
 '''
 
-from evolution import Individual, multi_indepenedent
+from evolution import Individual, generate
 import problems
 import util
 from collections import defaultdict
@@ -42,7 +42,7 @@ def one_run(evaluator, config, frequencies):
       required to perform a experimental run, including:
 
       - All information required to initialize an individual.
-      - All information required to run ``evolution.multi_independent``.
+      - All information required to run ``evolution.generate``.
       - ``verbose``: Boolean value for if extra runtime information should
         be displayed.
       - ``max_evals``: The maximum number of evaluations allowed before
@@ -54,8 +54,7 @@ def one_run(evaluator, config, frequencies):
     '''
     best = Individual(**config)
     last_improved = -1
-    output = {}
-    generator = enumerate(multi_indepenedent(config, output, frequencies))
+    generator = enumerate(generate(config, frequencies))
     for evals, individual in generator:
         individual.fitness = evaluator.get_fitness(individual)
         if best < individual:
@@ -66,14 +65,14 @@ def one_run(evaluator, config, frequencies):
         if (evals >= config['max_evals'] or
             best.fitness >= config['max_fitness']):
             break
+
     if config['verbose']:
         print "Best Found"
         best.show_active()
-    output.update({'fitness': best.fitness, 'evals': evals,
-                   'success': best.fitness >= config['max_fitness'],
-                   'phenotype': len(best.active),
-                   'normal': output['skipped'] + evals})
-    return output
+
+    return {'fitness': best.fitness, 'evals': evals,
+            'success': best.fitness >= config['max_fitness'],
+            'phenotype': len(best.active)}
 
 
 def all_runs(config):
@@ -178,10 +177,6 @@ if __name__ == '__main__':
                         help='Specifies if evolution should should avoid' +
                         ' duplicated evaluations.  Valid settings are: ' +
                         'normal, skip, accumulate, single')
-    parser.add_argument('-a', dest='active_push', type=str,
-                        help='Specifies if evolution should bias toward' +
-                        'more or less active genes.  Valid settings are: ' +
-                        'none, more, less')
     parser.add_argument('-r', dest='reorder', action='store_true',
                         help='Include this flag to have mutant reordering')
     parser.add_argument('-dag', dest='dag', action='store_true',
@@ -229,9 +224,6 @@ if __name__ == '__main__':
     if args.speed != None:
         config['speed'] = args.speed
 
-    if args.active_push != None:
-        config['active_push'] = args.active_push
-
     if args.frequency_results != None:
         config['frequency_results'] = args.frequency_results
 
@@ -250,6 +242,9 @@ if __name__ == '__main__':
             # Output the results, with the combined stuff on the first line
             util.save_list(args.output_results, [combined] + raw_results)
         if args.output_config != None:
+            # Serialize function list
+            config['function_list'] = [func.__name__ for func in
+                                       config['function_list']]
             # Saves the final configuration as a compressed file
             util.save_configuration(args.output_config, config)
         if args.frequency_results != None:

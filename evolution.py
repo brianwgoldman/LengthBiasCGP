@@ -5,7 +5,6 @@ import random
 import sys
 from copy import copy
 from util import diff_count
-import itertools
 from collections import defaultdict
 
 
@@ -398,40 +397,20 @@ class Individual(object):
             print self.connections(node_index)
         print self.genes[-self.output_length:]
 
-    def get_fitness(self):
-        '''
-        Returns the fitness of the individual.
-        '''
-        return self.fitness
-
-    def more_active(self):
-        '''
-        Returns a tuple of (fitness, # of active nodes).  Can be used to
-        override get_fitness to cause selection to favor longer individuals.
-        '''
-        return (self.fitness, len(self.active))
-
-    def less_active(self):
-        '''
-        Returns a tuple of (fitness, -# of active nodes).  Can be used to
-        override get_fitness to cause selection to favor shorter individuals.
-        '''
-        return (self.fitness, -len(self.active))
-
     def __lt__(self, other):
         '''
-        Returns the result of self.get_fitness() < other.get_fitness().
+        Returns the result of self.fitness < other.fitness.
         '''
-        return self.get_fitness() < other.get_fitness()
+        return self.fitness < other.fitness
 
     def __le__(self, other):
         '''
-        Returns the result of self.get_fitness() <= other.get_fitness().
+        Returns the result of self.fitness <= other.fitness
         '''
-        return self.get_fitness() <= other.get_fitness()
+        return self.fitness <= other.fitness
 
 
-def generate(config, output, frequencies):
+def generate(config, frequencies):
     '''
     An ``Individual`` generator that will yield a never ending supply of
     ``Individual`` objects that need to have their fitness set before the
@@ -458,16 +437,9 @@ def generate(config, output, frequencies):
         Valid settings are ``none``, ``more``, or ``less``.
       - ``problem``: The problem these individuals are solving.  Used on in
         the case where problems require unusual individual modification.
-    - ``output``: Dictionary used to return information about evolution, will
-      send out:
-
-      - ``skipped``: The number of individuals skipped by ``Skip``.
-      - ``estimated``: The estimated number of individuals that are skippable.
     - ``frequencies``:  Dictionary used to return information about how often
       individuals of different lengths are evolved.
     '''
-    output['skipped'] = 0
-    output['estimated'] = 0
     if config['dag']:
         # Override base functions with dag versions
         Individual.determine_active_nodes = \
@@ -477,12 +449,6 @@ def generate(config, output, frequencies):
     if config['speed'] == 'single':
         # Override normal mutation with Single
         Individual.mutate = Individual.one_active_mutation
-    if config['active_push'] == 'more':
-        # Override normal fitness with bias toward more active nodes
-        Individual.get_fitness = Individual.more_active
-    elif config['active_push'] == 'less':
-        # Override normal fitness with bias toward less active nodes
-        Individual.get_fitness = Individual.less_active
     if config['problem'] == 'Flat':
         # Override normal method for determining active genes
         Individual.determine_active_nodes = Individual.all_active
@@ -497,15 +463,11 @@ def generate(config, output, frequencies):
         mutants = [parent.mutate(config['mutation_rate'])
                    for _ in range(config['off_size'])]
         # Determine how many active genes the parent has
-        active = config['output_length'] + (len(parent.active) *
-                                            (config['max_arity'] + 1))
         for index, mutant in enumerate(mutants):
-            output['estimated'] += (1 - config['mutation_rate']) ** active
             prev = mutant
             if config['speed'] not in ['normal', 'single']:
                 change = parent.asym_phenotypic_difference(mutant)
                 if change == 0:
-                    output['skipped'] += 1
                     if config['speed'] == 'skip':
                         continue
                     if config['speed'] == 'accumulate':
@@ -526,31 +488,3 @@ def generate(config, output, frequencies):
         best_child = max(mutants)
         if parent <= best_child:
             parent = best_child
-
-
-def multi_indepenedent(config, output, frequencies):
-    '''
-    Allows for multiple parallel independent populations to be evolved
-    at the same time.  Will generate one individual from each population
-    before repeating a population.
-
-    Parameters:
-
-    - ``config``: A dictionary containing all of the configuration information
-      required to generate multiple populations worth of individuals.  Should
-      include values for:
-
-      - All configuration information required by ``generate``.
-      - ``pop_size``: The number of parallel populations to use.
-    - ``output``:  Used to return information about evolution.  Shared by all
-      parallel populations.  Will contain all information output by
-      ``generate``.
-    - ``frequencies``:  Dictionary used to return information about how often
-      individuals of different lengths are evolved.  Shared by all parallel
-      populations.  Will contain all information output by ``generate``.
-    '''
-    collective = itertools.izip(*[generate(config, output, frequencies)
-                                  for _ in range(config['pop_size'])])
-    for next_iterations in collective:
-        for next_iteration in next_iterations:
-            yield next_iteration

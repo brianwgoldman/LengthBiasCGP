@@ -4,8 +4,6 @@ for those problems.
 '''
 import operator
 import itertools
-import random
-import math
 
 
 def nand(x, y):
@@ -21,58 +19,8 @@ def nor(x, y):
     '''
     return not (x or y)
 
-
-def protected(function):
-    '''
-    Decorator that ensures decorated functions always have a valid output.
-    If an exception occurs or infinity is returned, the first argument of the
-    function will be returned.
-
-    Parameters:
-
-    - ``function``: The function to be decorated.
-    '''
-    def inner(*args):
-        try:
-            # Call the function on the arguments
-            value = function(*args)
-            if math.isinf(value):
-                return args[0]
-            return value
-        except (ValueError, OverflowError, ZeroDivisionError):
-            return args[0]
-    inner.__name__ = function.__name__
-    return inner
-
-
-def arity_controlled(desired):
-    '''
-    Decorator used to make functions take any number of inputs while only
-    using the first ``desired`` number of arguments.  For example, you can
-    pass 10 arguments to a function that takes only 1 if ``desired=1`` and
-    the first of the arguments will actually be used.
-
-    Parameters:
-
-    - ``desired``: The actual arity of the wrapped function.
-    '''
-    def wrap(function):
-        def inner(*args):
-            return function(*args[:desired])
-        inner.__name__ = function.__name__
-        return inner
-    return wrap
-
 # Standard lists of operators for different problems to use
 binary_operators = [operator.or_, operator.and_, nand, nor]
-regression_operators = [operator.add, operator.sub,
-                        operator.mul, operator.div]
-
-#for unary in [math.sin, math.cos, math.exp, math.log]:
-#    regression_operators.append(arity_controlled(1)(unary))
-
-# Ensures all regression operators are numerically protected
-regression_operators = [protected(op) for op in regression_operators]
 
 
 class Problem(object):
@@ -167,58 +115,6 @@ def single_bit_set(config):
             for i in range(config['input_length'])]
 
 
-def float_samples(config):
-    '''
-    Returns random samples of the input space.
-
-    Parameters:
-
-    - ``config``: A dictionary containing information about the input space.
-      - ``min``: The minimum valid value in the space.
-      - ``max``: The maximum valid value in the space.
-      - ``input_length``: The number of input variables.
-      - ``samples``: The number of samples to draw.
-    '''
-    return ([random.uniform(config['min'], config['max'])
-             for _ in xrange(config['input_length'])]
-            for _ in xrange(config['samples']))
-
-
-def float_range(config):
-    '''
-    Returns a incremental range of a floating point value.  Like range() for
-    floats.
-
-    Parameters:
-
-    - ``config``: A dictionary containing information about the input space.
-      - ``min``: The minimum valid value in the space.
-      - ``max``: The maximum valid value in the space.
-      - ``step``: The distance between sample points.
-    '''
-    counter = 0
-    while True:
-        value = counter * config['step'] + config['min']
-        if value > config['max']:
-            break
-        yield value
-        counter += 1
-
-
-def n_dimensional_grid(config):
-    '''
-    Returns a multidimensional grid of points in the input space.
-
-    Parameters:
-
-    - ``config``: A dictionary containing information about the input space.
-      - All configuration information required by ``float_range``.
-      - ``input_length``: How many dimensions are in the input space.
-    '''
-    return itertools.product(float_range(config),
-                             repeat=config['input_length'])
-
-
 class Binary_Mixin(object):
     '''
     Inheritance mixin useful for setting the class attributes of
@@ -226,16 +122,6 @@ class Binary_Mixin(object):
     '''
     data_range = staticmethod(binary_range)
     operators = binary_operators
-    max_arity = 2
-
-
-class Regression_Mixin(object):
-    '''
-    Inheritance mixin useful for setting the class attributes of
-    regression problems.
-    '''
-    data_range = staticmethod(float_range)
-    operators = regression_operators
     max_arity = 2
 
 
@@ -261,17 +147,6 @@ class Neutral(Problem):
         return 0
 
 
-class Even_Parity(Bounded_Problem, Binary_Mixin):
-    '''
-    Defines the Even Parity problem.
-    '''
-    def problem_function(self, inputs):
-        '''
-        Return the even parity of a list of boolean values.
-        '''
-        return [(sum(inputs) + 1) % 2]
-
-
 class Binary_Multiply(Bounded_Problem, Binary_Mixin):
     '''
     Defines the Binary Multiplier problem.
@@ -293,69 +168,6 @@ class Binary_Multiply(Bounded_Problem, Binary_Mixin):
         return map(int, extended)
 
 
-class Multiplexer(Bounded_Problem, Binary_Mixin):
-    '''
-    Defines the Multiplexer (MUX) Problem.
-    '''
-    def problem_function(self, inputs):
-        '''
-        Uses the first k bits as a selector for which of the remaining bits to
-        return.
-        '''
-        k = int(math.log(len(inputs), 2))
-        index = int(''.join(map(str, inputs[:k])), 2) + k
-        return [inputs[index]]
-
-
-class Demultiplexer(Bounded_Problem, Binary_Mixin):
-    '''
-    Defines the Demultiplexer (DEMUX) Problem.
-    '''
-    def problem_function(self, inputs):
-        '''
-        Returns the last input bit on the output line specified by the binary
-        index encoded on all inputs except the last bit.
-        '''
-        k = int(math.log(len(inputs) - 1, 2))
-        index = int(''.join(map(str, inputs[:k])), 2) + k
-        return [inputs[index]]
-
-
-class Binary_Encode(Bounded_Problem, Binary_Mixin):
-    '''
-    Defines the Binary Encode problem.
-    '''
-    # Set the data range to be all possible inputs with a single set bit.
-    data_range = staticmethod(single_bit_set)
-
-    def problem_function(self, inputs):
-        '''
-        Returns the binary encoding of which input line contains a one.
-        '''
-        oneat = inputs.index(1)
-        binary = bin(oneat)[2:]
-        width = math.log(len(inputs), 2)
-        return map(int, binary.zfill(int(width)))
-
-
-class Binary_Decode(Bounded_Problem, Binary_Mixin):
-    '''
-    Defines the Binary Decode problem.
-    '''
-    # Set the data range to be all possible inputs with a single set bit.
-    data_range = staticmethod(single_bit_set)
-
-    def problem_function(self, inputs):
-        '''
-        Returns a 1 on the output line specified by the binary input index
-        '''
-        combined = ''.join(map(str, inputs))
-        width = 2 ** len(inputs)
-        base = [0] * width
-        base[int(combined, 2)] = 1
-        return base
-
-
 class Breadth(Bounded_Problem, Binary_Mixin):
     '''
     Defines the Breadth problem.
@@ -370,25 +182,6 @@ class Breadth(Bounded_Problem, Binary_Mixin):
         Returns true as long as at least one input is true.
         '''
         return [sum(inputs) > 0]
-
-
-class TwoFloor(Bounded_Problem, Binary_Mixin):
-    '''
-    Defines the Two Floor Problem.
-    '''
-    # Set the data range to be all possible inputs with a single set bit.
-    data_range = staticmethod(single_bit_set)
-    # Set the list of possible operators to just be OR.
-    operators = [operator.or_]
-
-    def problem_function(self, inputs):
-        '''
-        Returns a string of bits half as long as the input string, where
-        the only set output bit is at the index // 2 of the set input bit.
-        '''
-        results = [0] * (len(inputs) // 2)
-        results[inputs.index(1) // 2] = 1
-        return results
 
 
 class Depth(Problem):
@@ -463,31 +256,3 @@ class Active(Problem):
         Returns the percentage of nodes that are active.
         '''
         return len(individual.active) / float(self.config['graph_length'])
-
-
-class Koza_1(Bounded_Problem, Regression_Mixin):
-    '''
-    Defines the Koza-1 problem.
-    '''
-    def koza_quartic(self, inputs):
-        '''
-        Return the result of Koza-1 on the specified input.  Expects the input
-        as a single element list and returns a single element list.
-        '''
-        x = inputs[0]
-        return [x ** 4 + x ** 3 + x ** 2 + x]
-
-
-class Pagie_1(Bounded_Problem, Regression_Mixin):
-    '''
-    Defines the Pagie-1 problem.
-    '''
-    # Set the data range to be an n dimensional grid.
-    data_range = staticmethod(n_dimensional_grid)
-
-    def pagie(self, inputs):
-        '''
-        Returns the result of Pagie-1 on the specified inputs.
-        '''
-        x, y = inputs
-        return [1.0 / (1 + x ** -4) + 1.0 / (1 + y ** -4)]
