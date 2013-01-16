@@ -1,4 +1,0 @@
-[
-[["evals", [251047, 0]], ["fitness", [1.0, 0.0]], ["phenotype", [334, 0]], ["success", [1.0, 0]]],
-{"evals": 251047, "phenotype": 334, "success": true, "fitness": 1.0}
-]
