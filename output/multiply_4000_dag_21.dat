@@ -1,0 +1,4 @@
+[
+[["evals", [903087, 0]], ["fitness", [1.0, 0.0]], ["phenotype", [1551, 0]], ["success", [1.0, 0]]],
+{"evals": 903087, "phenotype": 1551, "success": true, "fitness": 1.0}
+]
