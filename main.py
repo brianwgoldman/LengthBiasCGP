@@ -82,6 +82,7 @@ def all_runs(config):
 
     - list of the dictionaries returned by ``one_run``.
     - frequency information collected by ``one_run``.
+
     Will give results for all
     completed runs if a keyboard interrupt is received.
 
