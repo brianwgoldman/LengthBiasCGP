@@ -41,7 +41,7 @@ if __name__ == '__main__':
             print filename, "FAILED"
     print 'Files Successfully Loaded', filecount
 
-    #Find line information and best configurations
+    # Find line information and best configurations
     lines = defaultdict(list)
     bests = defaultdict(list)
     for key, results in raw.iteritems():
@@ -75,7 +75,6 @@ if __name__ == '__main__':
     legend(loc='best')
     xlabel("Number of Nodes")
     ylabel("Median Evaluations until Success")
-    statify = {}
     print '\n\tBests'
     print 'version, nodes, (evals, deviation), active nodes'
     for version, experiments in bests.iteritems():
@@ -83,11 +82,6 @@ if __name__ == '__main__':
         pretty = pretty_name[version]
         active = combined['phenotype'][0]
         print pretty, label, combined['evals'], active
-        statify[version] = [result['evals'] for result in results]
 
-    print "\n\tMann Whitney U Statistical Tests"
-    for version, data in statify.iteritems():
-        print "%s with Normal" % pretty_name[version],
-        print stats.mannwhitneyu(statify['normal'], data)
     savefig(problem + ".eps", dpi=300)
     show()
