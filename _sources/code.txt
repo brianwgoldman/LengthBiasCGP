@@ -30,6 +30,14 @@
     :undoc-members:
     :show-inheritance:
 
+:mod:`stats`
+-------------------------
+
+.. automodule:: stats
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`modeplot`
 -------------------------
 

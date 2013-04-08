@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Length Bias and Search Limitations in Cartesian Genetic Programming 1.0 documentation" href="index.html" />
-    <link rel="prev" title="Reducing Wasted Evaluations in Cartesian Genetic Programming" href="index.html" /> 
+    <link rel="prev" title="Length Bias and Search Limitations in Cartesian Genetic Programming" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Reducing Wasted Evaluations in Cartesian Genetic Programming"
+          <a href="index.html" title="Length Bias and Search Limitations in Cartesian Genetic Programming"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Length Bias and Search Limitations in Cartesian Genetic Programming 1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -369,7 +369,7 @@ values of that length.</p>
 
 <dl class="attribute">
 <dt id="problems.Binary_Mixin.operators">
-<tt class="descname">operators</tt><em class="property"> = [&lt;built-in function or_&gt;, &lt;built-in function and_&gt;, &lt;function nand at 0x938956c&gt;, &lt;function nor at 0x93895a4&gt;]</em><a class="headerlink" href="#problems.Binary_Mixin.operators" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">operators</tt><em class="property"> = [&lt;built-in function or_&gt;, &lt;built-in function and_&gt;, &lt;function nand at 0x9896a74&gt;, &lt;function nor at 0x9896aac&gt;]</em><a class="headerlink" href="#problems.Binary_Mixin.operators" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -460,7 +460,7 @@ fitness.</p>
 
 <dl class="attribute">
 <dt id="problems.Depth.operators">
-<tt class="descname">operators</tt><em class="property"> = [&lt;function &lt;lambda&gt; at 0x93898b4&gt;]</em><a class="headerlink" href="#problems.Depth.operators" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">operators</tt><em class="property"> = [&lt;function &lt;lambda&gt; at 0x9896dbc&gt;]</em><a class="headerlink" href="#problems.Depth.operators" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -571,6 +571,16 @@ multiply).</p>
 <p>NOTE: You CANNOT use pypy for this as pylab is current unsupported.  Use
 python 2.7 instead.</p>
 </div>
+<div class="section" id="module-stats">
+<span id="stats"></span><h1><a class="reference internal" href="#module-stats" title="stats"><tt class="xref py py-mod docutils literal"><span class="pre">stats</span></tt></a><a class="headerlink" href="#module-stats" title="Permalink to this headline">¶</a></h1>
+<p>Takes file names from the final/ folder and parses the information into
+readable values and produces statistical measures.  Use this module as an
+executable to process all result information for a single problem, such as:</p>
+<p>python stats.py final/multiply*.dat</p>
+<p>Do not mix problems in a single run.</p>
+<p>NOTE: You CANNOT use pypy for this as scipy is current unsupported.  Use
+python 2.7 instead.</p>
+</div>
 <div class="section" id="module-modeplot">
 <span id="modeplot"></span><h1><a class="reference internal" href="#module-modeplot" title="modeplot"><tt class="xref py py-mod docutils literal"><span class="pre">modeplot</span></tt></a><a class="headerlink" href="#module-modeplot" title="Permalink to this headline">¶</a></h1>
 <p>Takes file names from the output/ folder and parses the information into
@@ -673,6 +683,7 @@ Can be used to write compressed configurations.</li>
 <li><a class="reference internal" href="#module-evolution"><tt class="docutils literal"><span class="pre">evolution</span></tt></a></li>
 <li><a class="reference internal" href="#module-problems"><tt class="docutils literal"><span class="pre">problems</span></tt></a></li>
 <li><a class="reference internal" href="#module-plotter"><tt class="docutils literal"><span class="pre">plotter</span></tt></a></li>
+<li><a class="reference internal" href="#module-stats"><tt class="docutils literal"><span class="pre">stats</span></tt></a></li>
 <li><a class="reference internal" href="#module-modeplot"><tt class="docutils literal"><span class="pre">modeplot</span></tt></a></li>
 <li><a class="reference internal" href="#module-freqplot"><tt class="docutils literal"><span class="pre">freqplot</span></tt></a></li>
 <li><a class="reference internal" href="#module-util"><tt class="docutils literal"><span class="pre">util</span></tt></a></li>
@@ -680,7 +691,7 @@ Can be used to write compressed configurations.</li>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Reducing Wasted Evaluations in Cartesian Genetic Programming</a></p>
+                        title="previous chapter">Length Bias and Search Limitations in Cartesian Genetic Programming</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/code.txt"
@@ -713,7 +724,7 @@ Can be used to write compressed configurations.</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Reducing Wasted Evaluations in Cartesian Genetic Programming"
+          <a href="index.html" title="Length Bias and Search Limitations in Cartesian Genetic Programming"
              >previous</a> |</li>
         <li><a href="index.html">Length Bias and Search Limitations in Cartesian Genetic Programming 1.0 documentation</a> &raquo;</li> 
       </ul>
