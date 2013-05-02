@@ -95,6 +95,19 @@ def median_deviation(data, median=None):
         median = find_median(data)
     return  median, find_median([abs(x - median) for x in data])
 
+
+def set_fonts():
+    '''
+    Configures matplotlib to use only Type 1 fonts, and sets the figure size
+    such that those fonts will be legible when the figure is inserted in
+    a publication.
+    '''
+    import matplotlib
+    matplotlib.rcParams['ps.useafm'] = True
+    matplotlib.rcParams['pdf.use14corefonts'] = True
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.pyplot.figure(figsize=(7, 5))
+
 # Generator used when plotting to cylce through the different line styles
 linecycler = cycle(["-", "--", "-.", ":"])
 
