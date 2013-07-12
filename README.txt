@@ -6,6 +6,8 @@ final - Folder containing raw output for statistical comparison on 3-bit Multipl
 A built version of the documentation is available at: http://brianwgoldman.github.com/LengthBiasCGP/
 You can also check out the gh-pages branch of this repository.
 
+GECCO 2013 presentation is included in this repository under the name Length-Bias-And-Search-Limitations-In-CGP.pptx
+
 To run experiments, use main.py
 To analyze and plot experimental data, use plotter.py
 To statistically compare data, use stats.py
