@@ -3,7 +3,7 @@ documentation - Folder containing files used to construct documentation
 output - Folder containing raw output for all experiments performed during testing
 final - Folder containing raw output for statistical comparison on 3-bit Multiply
 
-A built version of the documentation is available at: http://brianwgoldman.github.com/LengthBiasCGP/
+A built version of the documentation is available at: http://brianwgoldman.github.io/LengthBiasCGP/
 You can also check out the gh-pages branch of this repository.
 
 GECCO 2013 presentation is included in this repository under the name Length-Bias-And-Search-Limitations-In-CGP.pptx
